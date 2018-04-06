@@ -308,3 +308,183 @@ input:checked + .knob:before {
 	float: left;
 }
 
+#alarm-button
+{
+	margin-bottom: 10px;
+	cursor: pointer;
+}
+
+.modal-background
+{
+	z-index: 99;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	bottom: 0px;
+	background-color: #00000070;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.modal-container
+{
+	z-index: 100;
+	position: relative;
+	background-color: #353535;
+	box-shadow: 0px 0px 5px;
+	width: 80%;
+	height: 80%;
+	display: flex;
+	flex-direction: column;
+}
+
+.alarm-title-bar
+{
+	flex-grow: 0;
+	bottom: 0px;
+	display: flex;
+	align-items: center;
+	width: 100%;
+}
+
+.alarm-title-item
+{
+	margin: 15px;
+}
+
+.alarm-title-bar h2
+{
+	flex: 1;
+	font-size: 1.5em;
+}
+
+.modal-button
+{
+	border-radius: 20px;
+	background-color: transparent;
+	border: 2px solid #808080;
+	color: #808080;
+	font-size: 1.2em;
+	padding: 3px 10px 3px 10px;
+	cursor: pointer;
+}
+
+.modal-button:hover
+{
+	box-shadow: 0px 1px 7px;
+}
+
+#close-modal
+{
+}
+
+.modal-content
+{
+	border: 1px solid #404040;
+	margin: 15px 30px 15px 30px;
+}
+
+.alarm-form-body
+{
+	margin-top: 10px;
+	padding: 5px;
+	border-top: 1px solid #808080;
+
+}
+
+#alarm-form-minutes, #alarm-form-relative-to, #alarm-form-name
+{
+	background-color: transparent;
+	border-radius: 5px;
+	border: 2px solid #808080;
+	padding: 0px 4px 0px 4px;
+	margin-top: 3px;
+	font: inherit;
+	color: inherit;
+}
+
+#alarm-form-minutes
+{
+	width: 70px;
+}
+
+#alarm-form-submit, #alarm-form-update
+{
+	float: right;
+}
+
+.alarm-list
+{
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.alarm-list h3
+{
+	margin: 3px;
+	margin-left: 30px;
+}
+
+.alarm-list-item
+{
+	flex: 0 0 80px;
+	display: flex;
+	border-bottom: 1px solid #808080;
+}
+
+.alarm-list-item::first
+{
+	border-top: 1px solid #808080;
+}
+
+.alarm-list-remaining
+{
+	flex: 0 0 100px;
+	text-align: center;
+	align-self: center;
+	font: inherit;
+	font-size: 2.5em;
+}
+
+.alarm-list-details
+{
+	flex: 1;
+	padding: 5px;
+	padding-left: 15px;
+}
+
+.alarm-list-options
+{
+	flex: 0 0 100px;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+}
+
+.alarm-list-button
+{
+	flex: 1;
+	border: none;
+	border-left: 1px solid #808080;
+	color: inherit;
+	font-family: inherit;
+}
+
+.alarm-edit
+{
+	background-color: navy;
+}
+.alarm-disable
+{
+	background-color: #606060;
+}
+.alarm-delete
+{
+	background-color: maroon;
+}

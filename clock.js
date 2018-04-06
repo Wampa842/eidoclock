@@ -2,6 +2,7 @@ var has_notified = false;
 var nice_background = true;
 var simple_layout = false;
 var eido_timestamp = 1510884902;
+var alarms = [];
 
 getCetusTime(1, function(t) {
     eido_timestamp = t;
@@ -19,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 var eidolon_sound = new Audio('eidolon.mp3');
-var door_sound = new Audio('door.wav');
+var door_sound = new Audio('door.ogg');
 // eidolon_sound.play()
 var has_played_night = false;
 var has_played_day = false;
@@ -197,5 +198,247 @@ function updateTime() {
 
     // $('.time>.ampm').text(((eidotime_in_h >= 12) ? ' pm' : ' am'));
 }
+
+function alarmToHtml(alarm)
+{
+    var remaining = 90;
+    var label = alarm.time + " minutes ";
+    switch(alarm.relative)
+    {
+        case 0:
+            label += "before sunset";
+            break;
+        case 1:
+            label += "before sunrise";
+            break;
+        case 2:
+            label += "after sunset";
+            break;
+        case 3:
+            label += "after sunrise";
+            break;
+    }
+    if(!alarm.repeat)
+        label += " (once)";
+
+    var content = [];
+    content.push('<div class="alarm-list-item" id="' + alarm.id + '">');
+    content.push('<div class="alarm-list-remaining">' + Math.floor(remaining / 60) + ':' + remaining % 60 + '</div>');
+    content.push('<div class="alarm-list-details">');
+    content.push('<h3>' + alarm.name + '</h3>');
+    content.push('<span class="alarm-list-label">' + label + '</span>');
+    content.push('</div>');
+    content.push('<div class="alarm-list-options">');
+    content.push('<button class="alarm-list-button alarm-edit" value="' + alarm.id + '">Edit</button>');
+    content.push('<button class="alarm-list-button alarm-disable" value="' + alarm.id + '">Disable</button>');
+    content.push('<button class="alarm-list-button alarm-delete" value="' + alarm.id + '">Delete</button>');
+    content.push('</div>');
+    content.push('</div>');
+
+    return content.join('');
+}
+
+function getAlarm()
+{
+    var out = 
+    {
+        id: "",
+        name: "",
+        time: 0,
+        relative: 0,
+        repeat: false,
+        notify: false
+    };
+
+    out.id = $('#alarm-form-name').val().replace(' ', '_').toLowerCase();
+    out.name = $('#alarm-form-name').val();
+    out.time = Number($('#alarm-form-minutes').val()) % 150;
+    out.relative = Number($('#alarm-form-relative-to').val());
+    out.repeat = $('#alarm-form-repeating').is(':checked');
+    out.notify = $('#alarm-form-notify').is(':checked');
+    return out;
+}
+
+function putAlarm(alarm)
+{
+    $('#new-alarm').trigger('click');
+    $('#alarm-form-name').val(alarm.name);
+    $('#alarm-form-minutes').val(alarm.time);
+    $('#alarm-form-repeat').prop('checked', alarm.repeat);
+    $('#alarm-form-notify').prop('checked', alarm.notify);
+    $('#alarm-form-relative-to').val(alarm.relative);
+}
+
+function saveAlarms()
+{
+    if(!alarms)
+        alarms = [];
+    localStorage.setItem('eidoclock-alarms', JSON.stringify(alarms));
+}
+
+function deleteAlarm(id)
+{
+    for(var i = 0; i < alarms.length; ++i)
+    {
+        if(alarms[i].id == id)
+        {
+            alarms.splice(i, 1);
+        }
+    }
+    saveAlarms();
+}
+
+function listAlarms()
+{
+    alarms = JSON.parse(localStorage.getItem('eidoclock-alarms'));
+    if(!alarms || alarms.length <= 0)
+    {
+        alarms = [];
+        $('.alarm-list').html('<p>You have no alarms</p>');
+        return;
+    }
+    $('#alarm-button-number').text(alarms.length);
+
+    var div = $('.alarm-list');
+    div.empty();
+    alarms.forEach(function(a)
+    {
+        div.append(alarmToHtml(a));
+
+        $('#' + a.id + ' .alarm-edit').click(function(event)
+        {
+            putAlarm(alarms.find(e => e.id == a.id));
+            $('#alarm-form-submit').hide();
+            $('#alarm-form-update').show();
+            $('#alarm-form-update').val(a.id);
+        });
+        $('#' + a.id + ' .alarm-disable').click(function(event)
+        {
+
+        });
+        $('#' + a.id + ' .alarm-delete').click(function(event)
+        {
+            deleteAlarm(a.id);
+            listAlarms();
+        });
+
+        a[alert] = function()
+        {
+            if(this.notify)
+            {
+                notify("Alarm:\n" + this.name);
+            }
+        };
+    });
+}
+
+var ex = 
+{
+    id: "my_alarm",
+    name: "My alarm",
+    time: 5,
+    relative: 0,
+    repeat: true,
+    notify: true
+};
+
+//event handlers
+$(document).ready(function(event)
+{
+    listAlarms();
+
+// TEST
+    $('#testbutton').click(function(event)
+    {
+        localStorage.setItem('eidoclock-alarms', '[{"id":"alarm_1","name":"alarm 1","time":5,"relative":0,"repeat":true,"notify":true},{"id":"alarm_2","name":"alarm 2","time":5,"relative":0,"repeat":true,"notify":true},{"id":"alarm_3","name":"alarm 3","time":5,"relative":0,"repeat":true,"notify":true},{"id":"alarm_4","name":"alarm 4","time":5,"relative":0,"repeat":true,"notify":true},{"id":"alarm_5","name":"alarm 5","time":5,"relative":0,"repeat":true,"notify":true},{"id":"alarm_6","name":"alarm 6","time":5,"relative":0,"repeat":true,"notify":true},{"id":"alarm_7","name":"alarm 7","time":5,"relative":0,"repeat":true,"notify":true},{"id":"alarm_8","name":"alarm 8","time":5,"relative":0,"repeat":true,"notify":true}]');
+        listAlarms();
+    });
+
+// Show alarms
+    $('#alarm-button').click(function(event)
+    {
+        $('.modal-background').show();
+    });
+
+// Close
+    $('#close-modal').click(function(event)
+    {
+        $('.modal-background').hide();
+    });
+
+// Add new alarm...
+    $('#new-alarm').click(function(event)
+    {
+        $('.alarm-form-body').show();
+        $('#new-alarm').hide();
+        $('#new-alarm-cancel').show();
+        $('#alarm-form-minutes').val(5);
+        $('#alarm-form-name').val('');
+        $('#alarm-form-relative-to').val(0);
+        $('#alarm-form-repeating').prop('checked', true);
+        $('#alarm-form-notify').prop('checked', true);
+        $('#alarm-form-submit').show();
+        $('#alarm-form-update').hide();
+        $('#alarm-form-name').focus();
+    });
+
+// Cancel
+    $('#new-alarm-cancel').click(function(event)
+    {
+        $('.alarm-form-body').hide();
+        $('#new-alarm').show();
+        $('#new-alarm-cancel').hide();
+        $('#alarm-form-submit').show();
+        $('#alarm-form-update').hide();
+        $('#alarm-form-update').val('');
+    });
+
+// Ok
+    $('#alarm-form-submit').click(function(event)
+    {
+        if($('#alarm-form-name').val() && $('#alarm-form-minutes').val() && Number($('#alarm-form-minutes').val()) >= 0)
+        {
+            event.preventDefault();
+            var a = getAlarm();
+            if(alarms.some(element => element.id == a.id))
+                alert("An alarm with that name already exists. Please give it a different name.");
+            else
+            {
+                alarms.push(a);
+                saveAlarms();
+                listAlarms();
+                $('#new-alarm-cancel').trigger('click');
+            }
+        }
+    });
+
+// Update
+    $('#alarm-form-update').click(function(event)
+    {
+        if($('#alarm-form-name').val() && $('#alarm-form-minutes').val() && Number($('#alarm-form-minutes').val()) >= 0)
+        {
+            event.preventDefault();
+            var a = getAlarm();
+            var index = alarms.indexOf(alarms.find(element => element.id == $('#alarm-form-update').val()));
+            if(index >= 0)
+            {
+                alarms.splice(index, 1, a);
+                saveAlarms();
+                listAlarms();
+                $('#new-alarm-cancel').trigger('click');
+            }
+            else
+            {
+                alarms.push(a);
+                saveAlarms();
+                listAlarms();
+                $('#new-alarm-cancel').trigger('click');
+            }
+            $('#alarm-form-submit').show();
+            $('#alarm-form-update').hide();
+            $('#alarm-form-update').val('');
+        }
+    });
+});
 
 var interval = setInterval(updateTime, 1);

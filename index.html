@@ -9,6 +9,9 @@
 </head>
 <body>
 	<div class="about">
+	<div class="option" id="alarm-button">
+		<span class="option-text">Show alarms (<span id="alarm-button-number">0</span>)</span>
+	</div>
 		<div class="option">
 			<span class="option-switch">
 				<label class="switch">
@@ -69,10 +72,54 @@
 				</div>
 			</span>
 		</div>
-	<div class="description-container">
-		Made by <a href="https://reddit.com/u/lyneca">/u/lyneca</a><br>
-		Hosted on <a href="https://github.com/lyneca/eidoclock">GitHub</a><br>
+		<div class="description-container">
+			Made by <a href="https://reddit.com/u/lyneca">/u/lyneca</a><br>
+			Hosted on <a href="https://github.com/lyneca/eidoclock">GitHub</a><br>
+		</div>
 	</div>
+	<div class="modal-background" style="display: none;">
+		<div class="modal-container">
+			<div class="alarm-title-bar">
+				<h2 class="alarm-title-item">Custom alarms</h2>
+<button id="testbutton">TEST</button>
+				<button class="modal-button alarm-title-item" id="close-modal">Close</button>
+			</div>
+			<div class="modal-content alarm-form">
+				<div class="alarm-form-head">
+					<button class="modal-button" id="new-alarm">Add new alarm...</button>
+					<button class="modal-button" id="new-alarm-cancel" style="display: none;">Cancel</button>
+				</div>
+				<form action="" class="alarm-form-body" style="display: none;">
+					<input type="text" id="alarm-form-name" value="" placeholder="Name your alarm" required>&nbsp;
+					<input type="number" id="alarm-form-minutes" min="0" max="100" value="5" placeholder="Activation time" required>
+					&nbsp;minutes&nbsp;
+					<select id="alarm-form-relative-to">
+						<option value="0">before sunset</option>
+						<option value="1">before sunrise</option>
+						<option value="2">after sunset</option>
+						<option value="3">after sunrise</option>
+					</select>
+					<input type="checkbox" id="alarm-form-repeating">&nbsp;Repeating&nbsp;&nbsp;
+					<input type="checkbox" id="alarm-form-notify">&nbsp;Notify
+					<button type="submit" class="modal-button" id="alarm-form-submit">Ok</button>
+					<button type="submit" class="modal-button" id="alarm-form-update" style="display: none;">Update</button>
+				</form>
+			</div>
+			<div class="modal-content alarm-list">
+				<div class="alarm-list-item" id="my_alarm">
+					<div class="alarm-list-remaining">42:01</div>
+					<div class="alarm-list-details">
+						<h3>My alarm</h3>
+						<span class="alarm-list-label">5 minutes before sunset (repeating)</span>
+					</div>
+					<div class="alarm-list-options">
+						<button class="alarm-list-button alarm-edit" value="my_alarm">Edit</button>
+						<button class="alarm-list-button alarm-disable" value="my_alarm">Disable</button>
+						<button class="alarm-list-button alarm-delete" value="my_alarm">Delete</button>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </body>
 </html>
