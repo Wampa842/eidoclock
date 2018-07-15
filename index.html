@@ -81,6 +81,7 @@
 		<div class="modal-container">
 			<div class="alarm-title-bar">
 				<h2 class="alarm-title-item">Custom alarms</h2>
+<span id="testclock">0</span>
 <button id="testbutton">TEST</button>
 				<button class="modal-button alarm-title-item" id="close-modal">Close</button>
 			</div>
@@ -99,8 +100,8 @@
 						<option value="2">after sunset</option>
 						<option value="3">after sunrise</option>
 					</select>
-					<input type="checkbox" id="alarm-form-repeating">&nbsp;Repeating&nbsp;&nbsp;
-					<input type="checkbox" id="alarm-form-notify">&nbsp;Notify
+					<label><input type="checkbox" id="alarm-form-repeating">Repeating</label>
+					<label><input type="checkbox" id="alarm-form-notify">Notify</label>
 					<button type="submit" class="modal-button" id="alarm-form-submit">Ok</button>
 					<button type="submit" class="modal-button" id="alarm-form-update" style="display: none;">Update</button>
 				</form>

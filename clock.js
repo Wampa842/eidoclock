@@ -90,6 +90,71 @@ function getCetusTime(fetch, callback)
 	});
 }
 
+function triggerAlarm(alarm)
+{
+    var label = alarm.name + ":\n" + alarm.time + " minutes ";
+    switch(alarm.relative)
+    {
+        case 0:
+            label += "before sunset";
+            break;
+        case 1:
+            label += "before sunrise";
+            break;
+        case 2:
+            label += "after sunset";
+            break;
+        case 3:
+            label += "after sunrise";
+            break;
+    }
+    notify(label);
+}
+
+function updateAlarms(time_m)
+{
+    var time_s = time_m * 60;
+    $('#testclock').text(Math.floor(time_m) + " | " + Math.floor(time_s));
+    alarms.forEach(function(alarm)
+    {
+        var alarm_s = alarm.time * 60;
+        // Trigger alarm if it is active and the current time is between the trigger time and 10 seconds after
+        var remaining;
+        switch(alarm.relative)
+        {
+            case 0:     // before night
+                remaining = (6000 - alarm_s - time_s) % 9000;
+                if(time_s >= (6000 - alarm_s) && time_s <= (5090 - alarm_s))
+                {
+                    triggerAlarm(alarm);
+                }
+                break;
+            case 1:     // before day
+                remaining = (9000 - alarm_s - time_s) % 9000;
+                if(time_s >= (9000 - alarm_s) && time_s <= (8090 - alarm_s))
+                {
+                    triggerAlarm(alarm);
+                }
+                break;
+            case 2:     // after night
+                remaining = (6000 + alarm_s - time_s) % 9000;
+                if(time_s >= (6000 + alarm_s) && time_s <= (6010 + alarm_s))
+                {
+                    triggerAlarm(alarm);
+                }
+                break;
+            case 3:     // after day
+                remaining = (alarm_s - time_s) % 9000;
+                if(time_s >= alarm_s && time_s <= (10 + alarm_s))
+                {
+                    triggerAlarm(alarm);
+                }
+                break;
+        }
+        $('.alarm-list-item#' + alarm.id + ' .alarm-list-remaining').text(Math.floor(remaining / 60) + ':' + Math.floor(remaining) % 60);
+    });
+}
+
 function updateTime() {
 	nice_background = $('#background').is(':checked');
 	simple_layout = $('#simple').is(':checked');
@@ -117,6 +182,9 @@ function updateTime() {
     $('.slider').css('top', slider_percent + '%');
 
     var next_interval;
+
+    // Check all alarms
+    updateAlarms(irltime_m);
 
     // Night is from 9pm to 5am
     // Day is from 5am to 9pm
@@ -201,7 +269,7 @@ function updateTime() {
 
 function alarmToHtml(alarm)
 {
-    var remaining = 90;
+    var remaining;
     var label = alarm.time + " minutes ";
     switch(alarm.relative)
     {
@@ -250,8 +318,8 @@ function getAlarm()
         notify: false
     };
 
-    out.id = $('#alarm-form-name').val().replace(' ', '_').toLowerCase();
-    out.name = $('#alarm-form-name').val();
+    out.id = $('#alarm-form-name').val().trim().replace(' ', '_').toLowerCase();
+    out.name = $('#alarm-form-name').val().trim();
     out.time = Number($('#alarm-form-minutes').val()) % 150;
     out.relative = Number($('#alarm-form-relative-to').val());
     out.repeat = $('#alarm-form-repeating').is(':checked');
